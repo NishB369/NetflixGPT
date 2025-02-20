@@ -1,11 +1,67 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Header from "../Header/Header";
-
-// use fromik
 
 const Login = () => {
   const [newUser, setNewUser] = useState(true);
-  function toggleNewUser(e) {
+
+  const nameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const [flag, setFlag] = useState(false);
+
+  const validateName = () => {
+    if (newUser) {
+      const nameRegex = /^[a-zA-Z ]+$/;
+      const name = nameRef.current.value;
+
+      if (!nameRegex.test(name)) {
+        setNameError("Invalid name format");
+        return false;
+      } else {
+        setNameError("");
+        return true;
+      }
+    }
+    return true;
+  };
+
+  const validateEmail = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const email = emailRef.current.value;
+
+    if (!emailRegex.test(email)) {
+      setEmailError("Invalid email format");
+      return false;
+    } else {
+      setEmailError("");
+      return true;
+    }
+  };
+
+  const validatePassword = () => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*(_|[^\w])).{8,}$/;
+    const password = passwordRef.current.value;
+
+    if (!passwordRegex.test(password)) {
+      setPasswordError("Invalid password format");
+      return false;
+    } else {
+      setPasswordError("");
+      return true;
+    }
+  };
+
+  const validateForm = () => {
+    return validateName() && validateEmail() && validatePassword();
+  };
+
+  function toggleNewUser() {
     setNewUser(!newUser);
   }
 
@@ -22,23 +78,43 @@ const Login = () => {
       <form className="text-white w-5/12 mx-auto py-10 h-[450px] flex flex-col bg-black/50 rounded-xl items-start px-10 ">
         <h1 className="text-white text-3xl font-bold mb-6">Sign in</h1>
         {newUser && (
-          <input
-            type="text"
-            placeholder="Full Name"
-            className="border border-white/25 p-4 rounded-md w-full bg-[#111212] mb-4"
-          ></input>
+          <>
+            <input
+              ref={nameRef}
+              type="text"
+              placeholder="Full Name"
+              className="border border-white/25 p-4 rounded-md w-full bg-[#111212] mb-4"
+              onChange={validateName}
+            ></input>
+            {nameError && (
+              <p className="text-red-600 text-sm -mt-4 mb-2">{nameError}</p>
+            )}
+          </>
         )}
         <input
+          ref={emailRef}
           type="email"
           placeholder="Email or Mobile Number"
           className="border border-white/25 p-4 rounded-md w-full bg-[#111212] mb-4"
+          onChange={validateEmail}
         ></input>
+        {emailError && (
+          <p className="text-red-600 text-sm -mt-4 mb-2">{emailError}</p>
+        )}
         <input
+          ref={passwordRef}
           type="password"
           placeholder="Password"
           className="border border-white/25 p-4 rounded-md w-full bg-[#111212]"
+          onChange={validatePassword}
         ></input>
-        <button className="p-2 font-semibold mt-4 w-full bg-[#E50914] rounded-sm cursor-pointer">
+        {passwordError && (
+          <p className="text-red-600 text-sm">{passwordError}</p>
+        )}
+        <button
+          className="p-2 font-semibold mt-4 w-full bg-[#E50914] rounded-sm cursor-pointer"
+          onClick={(e) => (e.preventDefault(), setFlag(validateForm()))}
+        >
           {newUser ? " Sign Up" : " Sign In"}
         </button>
         {!newUser && (
@@ -47,6 +123,9 @@ const Login = () => {
               Forgot Password?
             </span>
           </button>
+        )}
+        {newUser && flag && (
+          <span className="text-green-500 mt-4">✅ Added Successfully</span>
         )}
         {!newUser && (
           <div className="w-full flex items-center gap-2 mt-4">

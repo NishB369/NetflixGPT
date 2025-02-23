@@ -1,5 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "../Header/Header";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../../utils/firebase";
 
 const Login = () => {
   const [newUser, setNewUser] = useState(true);
@@ -12,7 +17,12 @@ const Login = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
+  const [signUpSuccess, setSignUpSuccess] = useState(null);
   const [flag, setFlag] = useState(false);
+
+  useEffect(() => {
+    console.log(newUser);
+  }, [newUser]);
 
   const validateName = () => {
     if (newUser) {
@@ -65,6 +75,42 @@ const Login = () => {
     setNewUser(!newUser);
   }
 
+  if (flag) {
+    if (newUser) {
+      createUserWithEmailAndPassword(
+        auth,
+        emailRef.current.value,
+        passwordRef.current.value
+      )
+        .then((userCredential) => {
+          const user = userCredential.user;
+          // console.log("SignUP", user);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          // console.log(errorMessage);
+        });
+    } else {
+      signInWithEmailAndPassword(
+        auth,
+        emailRef.current.value,
+        passwordRef.current.value
+      )
+        .then((userCredential) => {
+          const user = userCredential.user;
+          // console.log("SignIn", user);
+          setSignUpSuccess(true);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          // console.log(errorCode);
+          setSignUpSuccess(false);
+        });
+    }
+  }
+
   return (
     <div
       style={{
@@ -76,7 +122,9 @@ const Login = () => {
     >
       <Header />
       <form className="text-white w-5/12 mx-auto py-10 h-[450px] flex flex-col bg-black/50 rounded-xl items-start px-10 ">
-        <h1 className="text-white text-3xl font-bold mb-6">Sign in</h1>
+        <h1 className="text-white text-3xl font-bold mb-6">
+          {newUser ? " Sign up" : "Sign in"}
+        </h1>
         {newUser && (
           <>
             <input
@@ -117,8 +165,19 @@ const Login = () => {
         >
           {newUser ? " Sign Up" : " Sign In"}
         </button>
+        {signUpSuccess !== null && (
+          <span
+            className={`${
+              signUpSuccess ? "text-green-500" : "text-red-500"
+            } w-full text-center mt-4 text-sm`}
+          >
+            {signUpSuccess
+              ? "Successfully Signed In"
+              : "Incorrect Email or Password"}
+          </span>
+        )}
         {!newUser && (
-          <button className="mt-4 w-full">
+          <button className="mt-1 w-full">
             <span className="hover:underline duration-200 ease-in-out cursor-pointer">
               Forgot Password?
             </span>
@@ -138,12 +197,12 @@ const Login = () => {
           </div>
         )}
         <p className="mt-4">
-          New to Netflix?
+          {!newUser ? "New to Netflix?" : "Already a User?"}
           <span
             className="font-semibold cursor-pointer"
             onClick={toggleNewUser}
           >
-            {newUser ? " Sign up now." : " Already a User, Sign in."}
+            {!newUser ? " Sign up now." : " Sign in."}
           </span>
         </p>
       </form>

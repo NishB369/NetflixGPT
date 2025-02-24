@@ -5,8 +5,11 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "../../utils/firebase";
+import { useNavigate } from "react-router";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [newUser, setNewUser] = useState(true);
 
   const nameRef = useRef(null);
@@ -85,6 +88,7 @@ const Login = () => {
         .then((userCredential) => {
           const user = userCredential.user;
           // console.log("SignUP", user);
+          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -101,6 +105,7 @@ const Login = () => {
           const user = userCredential.user;
           // console.log("SignIn", user);
           setSignUpSuccess(true);
+          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -177,7 +182,7 @@ const Login = () => {
           </span>
         )}
         {!newUser && (
-          <button className="mt-1 w-full">
+          <button className="mt-4 w-full">
             <span className="hover:underline duration-200 ease-in-out cursor-pointer">
               Forgot Password?
             </span>

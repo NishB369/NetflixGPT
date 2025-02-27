@@ -5,11 +5,8 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "../../utils/firebase";
-import { useNavigate } from "react-router";
 
 const Login = () => {
-  const navigate = useNavigate();
-
   const [newUser, setNewUser] = useState(true);
 
   const nameRef = useRef(null);
@@ -22,10 +19,6 @@ const Login = () => {
 
   const [signUpSuccess, setSignUpSuccess] = useState(null);
   const [flag, setFlag] = useState(false);
-
-  useEffect(() => {
-    console.log(newUser);
-  }, [newUser]);
 
   const validateName = () => {
     if (newUser) {
@@ -88,7 +81,7 @@ const Login = () => {
         .then((userCredential) => {
           const user = userCredential.user;
           // console.log("SignUP", user);
-          navigate("/browse");
+          // navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -105,7 +98,7 @@ const Login = () => {
           const user = userCredential.user;
           // console.log("SignIn", user);
           setSignUpSuccess(true);
-          navigate("/browse");
+          // navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;

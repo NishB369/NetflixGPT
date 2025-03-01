@@ -38,7 +38,7 @@ const Header = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-between py-10">
+    <div className="flex items-center justify-between py-10 px-40 pb-12">
       <div>
         <Logo />
       </div>
